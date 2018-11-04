@@ -1,4 +1,4 @@
-FROM registry.access.redhat.com/openshift3/jenkins-slave-base-rhel7
+FROM registry.access.redhat.com/openshift3/jenkins-agent-maven-35-rhel7
 LABEL maintainer="Deven Phillips <deven.phillips@redhat.com>"
 
 LABEL com.redhat.component="jenkins-slave-selenium-firefox-rhel7-docker" \
