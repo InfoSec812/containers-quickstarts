@@ -10,6 +10,7 @@ LABEL com.redhat.component="jenkins-slave-selenium-chrome-rhel7-docker" \
       io.k8s.description="The jenkins agent to run Selenium with a headless Chrome browser." \
       io.openshift.tags="openshift,jenkins,slave,selenium,chrome"
 
+USER root
 ADD https://dl.google.com/linux/direct/google-chrome-stable_current_x86_64.rpm google-chrome-stable_current_x86_64.rpm
 
 ENV INSTALL_PKGS "xorg-x11-server-Xvfb unzip"
@@ -35,3 +36,5 @@ RUN curl -o chromedriver.zip -L https://chromedriver.storage.googleapis.com/2.43
     unzip chromedriver.zip && \
     rm -f chromedriver.zip && \
     mv chromedriver /usr/local/bin/chromedriver
+
+USER 1001

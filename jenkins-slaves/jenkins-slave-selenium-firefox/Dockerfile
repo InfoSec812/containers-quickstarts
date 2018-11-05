@@ -12,6 +12,7 @@ LABEL com.redhat.component="jenkins-slave-selenium-firefox-rhel7-docker" \
 
 ENV INSTALL_PKGS "xorg-x11-server-Xvfb firefox"
 
+USER root
 RUN yum install -y --setopt=tsflags=nodocs \
       --disablerepo=* \
       --enablerepo=rhel-7-server-rpms \
@@ -25,3 +26,4 @@ RUN curl -L -o geckodriver.tar.gz https://github.com/mozilla/geckodriver/release
     tar -xzf geckodriver.tar.gz -C /usr/local/bin/ && \
     rm -f geckodriver.tar.gz
 
+USER 1001
