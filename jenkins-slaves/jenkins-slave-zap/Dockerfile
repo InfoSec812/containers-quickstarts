@@ -26,11 +26,11 @@ ADD zap /zap/
 COPY configuration/* /var/lib/jenkins/
 COPY configuration/run-jnlp-client /usr/local/bin/run-jnlp-client
 
-ENV JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64/ \
-    PATH=$JAVA_HOME/bin:/zap:$PATH \
-    ZAP_PATH=/zap/zap.sh \
-    HOME=/var/lib/jenkins \
-    ZAP_PORT=8080
+ENV JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64/
+ENV PATH=$JAVA_HOME/bin:/zap:$PATH
+ENV ZAP_PATH=/zap/zap.sh
+ENV HOME=/var/lib/jenkins
+ENV ZAP_PORT=8080
 
 COPY policies /var/lib/jenkins/.ZAP/policies/
 COPY .xinitrc /var/lib/jenkins/
@@ -47,7 +47,5 @@ RUN curl -s https://raw.githubusercontent.com/zaproxy/zap-admin/master/ZapVersio
 
 ADD webswing.config /zap/webswing-2.3/webswing.config
 
-WORKDIR /var/lib/jenkins
-
 # Run the Jenkins JNLP client
-ENTRYPOINT ["/usr/local/bin/run-jnlp-client"]
+ENTRYPOINT ["zap.sh -daemon -host 0.0.0.0 -port 8080 -config api.disablekey=true -config api.addrs.addr.regex=true -config api.addrs.addr.name=.*"]
