@@ -12,9 +12,9 @@ LABEL com.redhat.component="jenkins-slave-zap-rhel7-docker" \
 
 WORKDIR /zap
 
-RUN mkdir -p /zap/wrk && curl -s https://raw.githubusercontent.com/zaproxy/zap-admin/master/ZapVersions-dev.xml | \
+RUN mkdir -p /zap/wrk && curl -L -s https://raw.githubusercontent.com/zaproxy/zap-admin/master/ZapVersions-dev.xml | \
     grep Linux | grep url | sed 's@^\s*<url>\([^<]*\)</url>.*$@\1@g' | \
-    xargs -n 1 curl -L -o zaproxy.tar.gz && \
+    xargs -I {} -n 1 curl -L -o zaproxy.tar.gz {} && \
     tar -xzf --strip-components=1 zaproxy.tar.gz && \
     touch AcceptedLicense && \
     chown root:root /zap -R && \
