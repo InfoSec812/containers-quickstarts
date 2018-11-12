@@ -25,7 +25,7 @@ RUN mkdir -p /zap/wrk && curl -L -s https://raw.githubusercontent.com/zaproxy/za
     chmod 777 /var/lib/jenkins -R && \
     chmod 777 /zap -R
 
-ENV JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64/ \
+ENV JAVA_HOME=/usr/lib/jvm/jre-1.8.0-openjdk/bin \
     PATH=$JAVA_HOME/bin:/zap:$PATH \
     ZAP_PATH=/zap/zap.sh \
     HOME=/var/lib/jenkins \
