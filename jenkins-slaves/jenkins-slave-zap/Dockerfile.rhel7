@@ -1,0 +1,35 @@
+#invoke npm in jenkinsfile: sh "scl enable rh-nodejs8 'npm run build'"
+FROM openshift3/jenkins-slave-base-rhel7:v3.9
+
+LABEL com.redhat.component="jenkins-slave-zap-rhel7-docker" \
+      name="openshift3/jenkins-slave-zap-rhel7" \
+      version="3.9" \
+      architecture="x86_64" \
+      release="1" \
+      io.k8s.display-name="Jenkins Slave ZAProxy" \
+      io.k8s.description="The jenkins slave zap image is Zed Attack Proxy on top of the Jenkins slave base RHEL7" \
+      io.openshift.tags="openshift,jenkins,slave,zap"
+
+WORKDIR /zap
+
+RUN mkdir -p /zap/wrk && curl -s https://raw.githubusercontent.com/zaproxy/zap-admin/master/ZapVersions-dev.xml | \
+    grep Linux | grep url | sed 's@^\s*<url>\([^<]*\)</url>.*$@\1@g' | \
+    xargs -n 1 curl -L -o zaproxy.tar.gz && \
+    tar -xzf --strip-components=1 zaproxy.tar.gz && \
+    touch AcceptedLicense && \
+    chown root:root /zap -R && \
+    chown root:root -R /var/lib/jenkins && \
+    chmod 777 /var/lib/jenkins -R && \
+    chmod 777 /zap -R
+
+ENV JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64/ \
+    PATH=$JAVA_HOME/bin:/zap:$PATH \
+    ZAP_PATH=/zap/zap.sh \
+    HOME=/var/lib/jenkins \
+    ZAP_PORT=8080
+
+COPY policies /var/lib/jenkins/.ZAP/policies/
+WORKDIR /var/lib/jenkins
+
+EXPOSE 8080
+USER 1001
