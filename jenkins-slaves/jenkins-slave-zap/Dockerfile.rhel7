@@ -25,11 +25,11 @@ RUN mkdir -p /zap/wrk && curl -L -s https://raw.githubusercontent.com/zaproxy/za
     chmod 777 /var/lib/jenkins -R && \
     chmod 777 /zap -R
 
-ENV JAVA_HOME=/usr/lib/jvm/jre-1.8.0-openjdk/bin \
-    PATH=$JAVA_HOME/bin:/zap:$PATH \
-    ZAP_PATH=/zap/zap.sh \
-    HOME=/var/lib/jenkins \
-    ZAP_PORT=8080
+ENV JAVA_HOME=/usr/lib/jvm/jre-1.8.0-openjdk/bin
+ENV PATH=/usr/lib/jvm/jre-1.8.0-openjdk/bin:/zap:$PATH
+ENV ZAP_PATH=/zap/zap.sh
+ENV HOME=/var/lib/jenkins
+ENV ZAP_PORT=8080
 
 COPY policies /var/lib/jenkins/.ZAP/policies/
 WORKDIR /var/lib/jenkins
