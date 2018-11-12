@@ -6,13 +6,13 @@ RUN yum install -y epel-release && \
     yum clean all && \
     yum install -y redhat-rpm-config \
     make automake autoconf gcc gcc-c++ \
-    libstdc++ libstdc++-devel \
-    java-1.8.0-openjdk wget curl \
+    libstdc++ libstdc++-devel  wget curl \
     xmlstarlet git x11vnc gettext tar \
     xorg-x11-server-Xvfb openbox xterm \
-    net-tools python-pip \
-    firefox nss_wrapper java-1.8.0-openjdk-headless \
-    java-1.8.0-openjdk-devel nss_wrapper git && \
+    net-tools python-pip firefox nss_wrapper \
+    java-1.8.0-openjdk-devel-1.8.0.161-2.b14.el7 \
+    java-1.8.0-openjdk-headless-1.8.0.161-2.b14.el7 \
+    nss_wrapper git && \
     yum clean all && \
     pip install --upgrade pip && \
     pip install zapcli && \
