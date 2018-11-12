@@ -1,6 +1,8 @@
 #invoke npm in jenkinsfile: sh "scl enable rh-nodejs8 'npm run build'"
 FROM openshift3/jenkins-slave-base-rhel7:v3.9
 
+USER root
+
 LABEL com.redhat.component="jenkins-slave-zap-rhel7-docker" \
       name="openshift3/jenkins-slave-zap-rhel7" \
       version="3.9" \
@@ -18,6 +20,7 @@ RUN mkdir -p /zap/wrk && curl -L -s https://raw.githubusercontent.com/zaproxy/za
     tar --strip-components=1 -xzf zaproxy.tar.gz && \
     touch AcceptedLicense && \
     chown root:root /zap -R && \
+    mkdir -p /var/lib/jenkins && \
     chown root:root -R /var/lib/jenkins && \
     chmod 777 /var/lib/jenkins -R && \
     chmod 777 /zap -R
