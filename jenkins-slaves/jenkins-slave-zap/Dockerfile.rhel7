@@ -14,6 +14,10 @@ LABEL com.redhat.component="jenkins-slave-zap-rhel7-docker" \
 
 WORKDIR /zap
 
+RUN yum install -y java-1.8.0-openjdk-devel && \ 
+    yum clean all && \ 
+    rm -rf /var/cache/yum
+
 RUN mkdir -p /zap/wrk && curl -L -s https://raw.githubusercontent.com/zaproxy/zap-admin/master/ZapVersions-dev.xml | \
     grep Linux | grep url | sed 's@^\s*<url>\([^<]*\)</url>.*$@\1@g' | \
     xargs -I {} -n 1 curl -L -o zaproxy.tar.gz {} && \
