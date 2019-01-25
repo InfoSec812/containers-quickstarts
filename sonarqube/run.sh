@@ -8,6 +8,7 @@ cp -a /opt/sonarqube/data-init/* /opt/sonarqube/data/
 
 ## Link the plugins directory from the mounted volume
 rm -rf /opt/sonarqube/extensions/plugins
+
 ln -s /opt/sonarqube/data/plugins /opt/sonarqube/extensions/plugins
 
 mkdir -p /opt/sonarqube/data/plugins

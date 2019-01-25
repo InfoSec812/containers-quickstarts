@@ -190,36 +190,40 @@ objects:
             value: ${PROXY_USER}
           - name: PROXY_PASSWORD
             value: ${PROXY_PASSWORD}
-          - name: LDAP_URL
+          - name: SONAR_LDAP_URL
             value: ${SONAR_LDAP_URL}
-          - name: LDAP_REALM
+          - name: SONAR_AUTH_REALM
             value: ${SONAR_AUTH_REALM}
-          - name: LDAP_AUTHENTICATION
+          - name: SONAR_LDAP_BIND_METHOD
             value: ${SONAR_LDAP_BIND_METHOD}
-          - name: LDAP_USER_BASEDN
+          - name: SONAR_BASE_DN
             value: ${SONAR_BASE_DN}
-          - name: LDAP_USER_REAL_NAME_ATTR
+          - name: SONAR_LDAP_USER_REAL_NAME_ATTR
             value: ${SONAR_LDAP_USER_REAL_NAME_ATTR}
-          - name: LDAP_USER_EMAIL_ATTR
+          - name: SONAR_LDAP_USER_EMAIL_ATTR
             value: ${SONAR_LDAP_USER_EMAIL_ATTR}
-          - name: LDAP_USER_REQUEST
+          - name: SONAR_LDAP_USER_REQUEST
             value: ${SONAR_LDAP_USER_REQUEST}
-          - name: LDAP_GROUP_BASEDN
+          - name: SONAR_LDAP_GROUP_BASEDN
             value: ${SONAR_LDAP_GROUP_BASEDN}
-          - name: LDAP_GROUP_REQUEST
+          - name: SONAR_LDAP_GROUP_REQUEST
             value: ${SONAR_LDAP_GROUP_REQUEST}
-          - name: LDAP_GROUP_ID_ATTR
+          - name: SONAR_LDAP_GROUP_ID_ATTR
             value: ${SONAR_LDAP_GROUP_ID_ATTR}
-          - name: LDAP_CONTEXTFACTORY
+          - name: SONAR_LDAP_CONTEXTFACTORY
             value: ${SONAR_LDAP_CONTEXTFACTORY}
+          - name: SONAR_LDAP_STARTTLS
+            value: ${SONAR_LDAP_STARTTLS}
+          - name: SONAR_LDAP_FOLLOW_REFERRALS
+            value: ${SONAR_LDAP_FOLLOW_REFERRALS}
           - name: SONAR_AUTOCREATE_USERS
             value: ${SONAR_AUTOCREATE_USERS}
-          - name: LDAP_BINDDN
+          - name: SONAR_LDAP_BIND_DN
             valueFrom:
               secretKeyRef:
                 key: username
                 name: sonar-ldap-bind-dn
-          - name: LDAP_BINDPASSWD
+          - name: SONAR_LDAP_BIND_PASSWORD
             valueFrom:
               secretKeyRef:
                 key: password
@@ -449,3 +453,13 @@ parameters:
     description: The ContextFactory implementation to be used when communicating with the LDAP server
     displayName: LDAP Context Factory
     value: com.sun.jndi.ldap.LdapCtxFactory
+  - name: SONAR_LDAP_STARTTLS
+    displayName: Enable TLS For LDAP
+    description: Use TLS for LDAP bind (true or false)
+    value: "false"
+    required: true
+  - name: SONAR_LDAP_FOLLOW_REFERRALS
+    displayName: Enable referrals For LDAP
+    description: Follow referrals in LDAP responses (true or false)
+    value: "true"
+    required: true
