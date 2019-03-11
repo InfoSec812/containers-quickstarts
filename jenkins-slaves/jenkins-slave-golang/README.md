@@ -8,6 +8,7 @@ Provides a docker image of the golang runtime for use as a Jenkins slave.
 For local running and experimentation run `docker run -i -t jenkins-slave-golang /bin/bash` and have a play once inside the container.
 
 ## Build in OpenShift
+### NOTE: This container image REQUIRES the RH OpenShift Application Runtimes repositories to be enabled on the cluster.
 ```bash
 oc process -f ../templates/jenkins-slave-generic-template.yml \
     -p NAME=jenkins-slave-golang \
