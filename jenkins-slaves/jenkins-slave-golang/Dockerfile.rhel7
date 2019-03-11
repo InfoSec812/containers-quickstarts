@@ -1,4 +1,4 @@
-FROM openshift3/jenkins-slave-base-rhel7:v3.11
+FROM registry.access.redhat.com/openshift3/jenkins-slave-base-rhel7:v3.11
 
 LABEL com.redhat.component="jenkins-slave-golang-rhel7-docker" \
       name="openshift3/jenkins-slave-golang-rhel7" \
