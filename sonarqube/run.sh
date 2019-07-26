@@ -8,21 +8,24 @@ cp -a /opt/sonarqube/data-init/* /opt/sonarqube/data/
 
 ## Link the plugins directory from the mounted volume
 rm -rf /opt/sonarqube/extensions/plugins
+mkdir -p /opt/sonarqube/data/plugins
 ln -s /opt/sonarqube/data/plugins /opt/sonarqube/extensions/plugins
 
-mkdir -p /opt/sonarqube/data/plugins
-for I in $(ls /opt/sonarqube/extensions-init/plugins/*.jar);
-do
-  TARGET_PATH=$(echo ${I} | sed 's@extensions-init/plugins@data/plugins@g')
-  if ! [[ -e ${TARGET_PATH} ]]; then
-    cp ${I} ${TARGET_PATH}
-  fi
-done
+## If a properties file is mounted, load those properties into SQ
+## Valid properties can be seen here: https://bit.ly/2LJWxWQ
+export SONAR_EXTRA_PROPS="-Dsonar.log.console=true"
+if [ -d "/opt/sonarqube/conf/properties" && -f "/opt/sonarqube/conf/properties/sonar.properties" ]; then
+  for PROP in $(cat /opt/sonarqube/conf/properties/sonar.properties)
+  export SONAR_EXTRA_PROPS="${SONAR_EXTRA_PROPS} -D${PROP}"
+fi
+
+## Install plugins from PLUGINS_LIST environment variable
+/opt/sonarqube/bin/plugins.sh
 
 if [ "${1:0:1}" != '-' ]; then
   exec "$@"
 fi
 
-java -jar lib/sonar-application-$SONAR_VERSION.jar \
-    -Dsonar.web.javaAdditionalOpts="${SONARQUBE_WEB_JVM_OPTS} -Djava.security.egd=file:/dev/./urandom" \
+java ${JAVA_OPTS} -jar lib/sonar-application-$SONAR_VERSION.jar \
+    -Dsonar.web.javaAdditionalOpts="${SONARQUBE_WEB_JVM_OPTS} ${SONAR_EXTRA_PROPS} -Djava.security.egd=file:/dev/./urandom" \
     "$@"

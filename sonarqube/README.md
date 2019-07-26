@@ -51,16 +51,18 @@ By default, SonarQube will use H2 embedded, which is only for demo usage. To use
 
 ### Plugin Installation
 
-When the conatiner image is built, the Dockerfile has hardcoded list of plugins that are installed.
+When deploying the container, set the environment variable `PLUGINS_LIST` like so:
+```
+export PLUGINS_LIST='typescript vbnet groovy jacoco'
+```
+
+When the container starts, the `run.sh` script will execute the `plugins.sh` script in order to install the specified plugins.
 
 ### Configuration
-Some configuration settings are well defined, but you can always pass additional configuration using the catchall
-`SONARQUBE_WEB_JVM_OPTS`. Any Java properties placed in this environment variable will be passed to the SonarQube 
-application. The format of the Java properties is like `-Dsome.java.property=someValue`, so you can add an environment
-variable like `SONARQUBE_WEB_JVM_OPTS="-Dsonar.auth.google.allowUsersToSignUp=false -Dsonar.auth.google.enabled=true"`
+Most configuration should be set via the properties file `/opt/sonarqube/conf/properties/sonar.properties`. A list of
+viable properties for SonarQube can be found [HERE](https://bit.ly/2LJWxWQ). These properties ONLY affect the SonarQube Jetty application. If you need the JVM to have special start-up properties they should be placed in the `JAVA_OPTS` environment variable.
 
 ### Pre-defined Configuration Variables
-
 
 * Variable: SONAR_PLUGINS_LIST
   * displayName: SonarQube Plugins List
@@ -70,139 +72,53 @@ variable like `SONARQUBE_WEB_JVM_OPTS="-Dsonar.auth.google.allowUsersToSignUp=fa
   * displayName: Extra SonarQube startup properties
   * Description: Extra startup properties for SonarQube (in the form of "-Dsonar.someProperty=someValue")
   * Default Value:
-* Variable: JDBC_USER
-  * Description: Username for database user that will be used for accessing the database.
-  * displayName: database Connection Username
-  * from: user[A-Z0-9]{3}
-  * generate: expression
-  * Required: true
-* Variable: JDBC_PASSWORD
-  * Description: Password for the database connection user.
-  * displayName: database Connection Password
-  * from: '[a-zA-Z0-9]{16}'
-  * generate: expression
-  * Required: true
-* Variable: JDBC_URL
-  * displayName: JDBC URL for connecting to the SonarQube database
-  * Description: Password used for SonarQube database authentication (leave blank to use ephemeral database)
-  * Default Value: "jdbc:postgresql://postgresql:5432/sonar"
-* Variable: LDAP_BINDDN
-  * displayName: LDPA bind Distinguished Name
-  * Description: Bind DN for LDAP authentication (leave blank for local authentication)
+* Variable: JAVA_OPTS
+  * displayName: Extra JAVA startup properties
+  * Description: Extra startup properties for JAVA (e.g. "-DsomeProperty=someValue -Xmx1G -Xms1G")
   * Default Value:
-* Variable: LDAP_BINDPASSWD
-  * displayName: LDAP bind password
-  * Description: Bind password for LDAP authentication (leave blank for local authentication)
-  * Default Value:
-* Variable: LDAP_URL
-  * displayName: LDAP server URL
-  * Description: LDAP URL for authentication (leave blank for local authentication)
-  * Default Value:
-* Variable: LDAP_REALM
-  * displayName: LDAP realm
-  * Description: "A realm defines the namespace from which the authentication entity (the value of the Context.SECURITY_PRINCIPAL property) is selected. (See: http://docs.oracle.com/javase/jndi/tutorial/ldap/security/digest.html)"
-  * Default Value:
-* Variable: LDAP_CONTEXTFACTORY
-  * displayName: JNDI ContextFactory to be used
-  * Description: The context factory is a Java class which is used for creating bindings to LDAP servers. The default value should work with most LDAP servers.
-  * Default Value: com.sun.jndi.ldap.LdapCtxFactory
-* Variable: LDAP_STARTTLS
-  * displayName: Enable StartTLS
-  * Description: Tells the LDAP plugin to use TLS for connections to the LDAP server
-  * Default Value: "false"
-* Variable: LDAP_AUTHENTICATION
-  * displayName: LDAP authentication method
-  * Description:  "Typical values include: simple | CRAM-MD5 | DIGEST-MD5 | GSSAPI"
-  * Default Value: simple
-* Variable: LDAP_USER_BASEDN
-  * displayName: LDAP user base Distinguished Name
-  * Description: LDAP BaseDN under which to search for user objects
-  * Default Value:
-* Variable: LDAP_USER_REQUEST
-  * displayName: LDAP user object filter
-  * Description: A filter definition which will cause the LDAP server to only return user objects
-  * Default Value: (&(objectClass=inetOrgPerson)(uid={login}))
-* Variable: LDAP_USER_REAL_NAME_ATTR
-  * displayName: LDAP user's real name atrribute
-  * Description: LDAP attribute on the user object which will be used to get the user's full name
-  * Default Value: cn
-* Variable: LDAP_USER_EMAIL_ATTR
-  * displayName: LDAP user e-mail attribute
-  * Description: LDAP attribute which holds the user's e-mail address
-  * Default Value: mail
-* Variable: LDAP_GROUP_BASEDN
-  * displayName: LDAP group base Distinguished Name
-  * Description: LDAP BaseDN under which to search for group objects
-  * Default Value:
-* Variable: LDAP_GROUP_REQUEST
-  * displayName: LDAP group object filter
-  * Description: A filter definition which will cause the LDAP server to only return group objects
-  * Default Value: (&(objectClass=groupOfUniqueNames)(uniqueMember={dn}))
-* Variable: LDAP_GROUP_ID_ATTR
-  * displayName: LDAP group ID attribute
-  * Description: LDAP attribute from the group object which holds the group's ID
-  * Default Value: cn
-* Variable: SONARQUBE_BUILDBREAKER_MAX_ATTEMPTS
-  * displayName: Max BuildBreaker attempts
-  * Description: Build Breaker plugin - Max number of poll attempts before failing to get analysis results
-  * Default Value: "30"
-* Variable: SONARQUBE_BUILDBREAKER_INTERVAL
-  * displayName: Poll Interval
-  * Description: Build Breaker plugin - Interval to wait between poll requests to get analysis results
-  * Default Value: "20000"
-* Variable: SONARQUBE_BUILDBREAKER_THRESHOLD
-  * displayName: Failure threshold
-  * Description: Build Breaker plugin - Threshold of an issue at which a build will instantly break regardless of all other analysis results
-  * Default Value: "CRITICAL"
-* Variable: SONAR_BUILDBREAKER_DISABLE
-  * displayName: Disable Build Breaker plugin
-  * Description: Build Breaker plugin - Disable the build breaker plugin for all builds
-  * Default Value: "true"
-* Variable: FORCE_AUTHENTICATION
-  * displayName: Require Authentication
-  * Description: Require authentication for all requests to sonarqube
-  * Default Value: "true"
 
-## Example LDAP Configurations
+## Example LDAP Configurations (Mount properties file at /opt/sonarqube/conf/properties/sonar.properties)
 
 ### OpenLDAP/FreeIPA/Red Hat Identity Manager
 ```
-POSTGRES_DATABASE_NAME=sonar
-POSTGRES_PASSWORD=sonar
-POSTGRES_USERNAME=sonar
-SONAR_LDAP_STARTTLS=true
-SONAR_LDAP_BIND_DN=uid=admin,CN=users,CN=compat,DC=mycompany,DC=com
-SONAR_LDAP_BIND_PASSWORD='S0m3P4s$woRd'
-SONAR_LDAP_URL=ldaps://idm.mycompany.com:389
-SONAR_LDAP_AUTHENTICATION=simple
-SONAR_LDAP_USER_BASEDN=DC=mycompany,DC=com
-SONAR_LDAP_USER_REAL_NAME_ATTR=cn
-SONAR_LDAP_USER_EMAIL_ATTR=mail
-SONAR_LDAP_USER_REQUEST=(&(objectClass=inetOrgPerson)(uid={login}))
-SONAR_LDAP_GROUP_REQUEST=(&(objectClass=posixgroup)(memberUid={uid}))
-SONAR_LDAP_GROUP_BASEDN=DC=mycompany,DC=com
-SONAR_LDAP_GROUP_ID_ATTR=cn
-SONAR_AUTOCREATE_USERS=true
-SONAR_AUTH_REALM=LDAP
+sonar.jdbc.url=jdbc:postgresql://[SERVER]:[PORT]/sonar
+sonar.jdbc.password=sonar
+sonar.jdbc.username=sonar
+sonar.forceAuthentication=true
+sonar.authenticator.createUsers=true
+sonar.security.realm=LDAP
+ldap.StartTLS=true
+ldap.bindDn=uid=admin,CN=users,CN=compat,DC=mycompany,DC=com
+ldap.bindPassword='S0m3P4s$woRd'
+ldap.url=ldaps://idm.mycompany.com:389
+ldap.authentication=simple
+ldap.user.baseDn=DC=mycompany,DC=com
+ldap.user.realNameAttribute=cn
+ldap.user.emailAttribute=mail
+ldap.user.request=(&(objectClass=inetOrgPerson)(uid={login}))
+ldap.group.request=(&(objectClass=posixgroup)(memberUid={uid}))
+ldap.group.baseDn=DC=mycompany,DC=com
+ldap.group.idAttribute=cn
 ```
 
 ### Active Directory
 ```
-POSTGRES_DATABASE_NAME=sonar
-POSTGRES_PASSWORD=sonar
-POSTGRES_USERNAME=sonar
-SONAR_LDAP_STARTTLS=false
-SONAR_LDAP_BIND_DN=uid=admin,CN=users,CN=compat,DC=mycompany,DC=com
-SONAR_LDAP_BIND_PASSWORD='S0m3P4s$woRd'
-SONAR_LDAP_URL=ldap://mycompany.com:389
-SONAR_LDAP_AUTHENTICATION=simple
-SONAR_LDAP_USER_BASEDN=DC=mycompany,DC=com
-SONAR_LDAP_USER_REAL_NAME_ATTR=cn
-SONAR_LDAP_USER_EMAIL_ATTR=mail
-SONAR_LDAP_USER_REQUEST=(&(objectClass=user)(sAMAccountName={login}))
-SONAR_LDAP_GROUP_REQUEST=(&(objectClass=group)(member={dn}))
-SONAR_LDAP_GROUP_BASEDN=DC=mycompany,DC=com
-SONAR_LDAP_GROUP_ID_ATTR=cn
-SONAR_AUTOCREATE_USERS=true
-SONAR_AUTH_REALM=LDAP
+sonar.jdbc.url=jdbc:postgresql://[SERVER]:[PORT]/sonar
+sonar.jdbc.password=sonar
+sonar.jdbc.username=sonar
+sonar.forceAuthentication=true
+sonar.authenticator.createUsers=true
+sonar.security.realm=LDAP
+ldap.StartTLS=false
+ldap.bindDn=uid=admin,CN=users,CN=compat,DC=mycompany,DC=com
+ldap.bindPassword='S0m3P4s$woRd'
+ldap.url=ldaps://idm.mycompany.com:389
+ldap.authentication=simple
+ldap.user.baseDn=DC=mycompany,DC=com
+ldap.user.realNameAttribute=cn
+ldap.user.emailAttribute=mail
+ldap.user.request=(&(objectClass=user)(sAMAccountName={login}))
+ldap.group.request=(&(objectClass=group)(member={dn}))
+ldap.group.baseDn=DC=mycompany,DC=com
+ldap.group.idAttribute=cn
 ```

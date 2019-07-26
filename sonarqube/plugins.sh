@@ -12,7 +12,7 @@ echo "SONARQUBE_VERSION: ${SQ_VERSION}"
 
 curl -L -sS -o /tmp/pluginList.txt https://update.sonarsource.org/update-center.properties
 printf "Downloading additional plugins\n"
-for PLUGIN in "$@"
+for PLUGIN in "${PLUGINS_LIST}"
 do
 	printf '\tExtracting plugin download location - %s\n' ${PLUGIN}
 	MATCH_STRING=$(cat /tmp/pluginList.txt | grep requiredSonarVersions | grep "${SQ_VERSION}" | sed 's@\.requiredSonarVersions.*@@g' | sort -V | grep "^${PLUGIN}\." | tail -n 1 | sed 's@$@.downloadUrl@g')
@@ -23,7 +23,7 @@ do
 
 		## Check to see if plugin exists, attempt to download the plugin if it does exist.
 		if ! [[ -z "${DOWNLOAD_URL}" ]]; then
-			curl -L -sS -o /opt/sonarqube/extensions-init/plugins/${PLUGIN_FILE} ${DOWNLOAD_URL} && printf "\t\t%-35s%10s" "${PLUGIN_FILE}" "DONE" || printf "\t\t%-35s%10s" "${PLUGIN_FILE}" "FAILED"
+			curl -L -sS -o /opt/sonarqube/data/plugins/${PLUGIN_FILE} ${DOWNLOAD_URL} && printf "\t\t%-35s%10s" "${PLUGIN_FILE}" "DONE" || printf "\t\t%-35s%10s" "${PLUGIN_FILE}" "FAILED"
 			printf "\n"
 		else
 			## Plugin was not found in the plugin inventory
