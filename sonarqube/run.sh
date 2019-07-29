@@ -14,7 +14,7 @@ ln -s /opt/sonarqube/data/plugins /opt/sonarqube/extensions/plugins
 ## If a properties file is mounted, load those properties into SQ
 ## Valid properties can be seen here: https://bit.ly/2LJWxWQ
 export SONAR_EXTRA_PROPS=""
-if [ -d "/opt/sonarqube/conf/properties" && -f "/opt/sonarqube/conf/properties/sonar.properties" ]; then
+if [[ -d "/opt/sonarqube/conf/properties" && -f "/opt/sonarqube/conf/properties/sonar.properties" ]]; then
   for PROP in $(cat /opt/sonarqube/conf/properties/sonar.properties); do
     export SONAR_EXTRA_PROPS="${SONAR_EXTRA_PROPS} -D${PROP}"
   done
